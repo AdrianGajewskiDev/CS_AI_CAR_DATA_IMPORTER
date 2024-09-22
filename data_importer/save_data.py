@@ -5,23 +5,19 @@ from data_importer.logging.internal_logger import InternalLogger
 
 
 def save_data(event: dict) -> int:
-    data = event.get("data")
+    data = event.get("models")
 
     if not data:
         raise ValueError("No data provided")
     table_items = []
-    for key, value in data.items():
-        partition_key = key
+    for model in data:
+        partition_key = event["make"]
+        sub_key = model["model"]
+        generations = [] if not model.get("generations") else model["generations"]
         InternalLogger.LogInfo(f"Partition_Key: {partition_key}")
-        for sub_key, sub_value in value.items():
-            InternalLogger.LogInfo(f"Sort_key: {sub_key}")
-
-            generations = "[]"
-
-            if isinstance(sub_value, dict):
-                generations = build_generations(sub_value)
-            
-            table_items.append({"make": partition_key, "model": sub_key, "generations": generations})
+        InternalLogger.LogInfo(f"Sort_key: {sub_key}")
+        
+        table_items.append({"make": partition_key, "model": sub_key, "generations": generations})
 
     for item in table_items:
         InternalLogger.LogInfo(f"Item: {item}")

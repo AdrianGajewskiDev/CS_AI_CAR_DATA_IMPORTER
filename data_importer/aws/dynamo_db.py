@@ -13,7 +13,7 @@ def save_data_to_dynamo_db(partion_key: str, sort_key: str, generations: str) ->
             'S': sort_key
         },
         'generations': {
-            'S': generations
+            'S': str(generations)
         }
     }
 
